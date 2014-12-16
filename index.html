@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PaddyPower new years lucks</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body, html {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            background-color: #31b0d5;
+            color: #ffff00;
+        }
+        h3 {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #clickImageHolder {
+            position: relative;
+            border: 2px solid black;
+            margin: 0px auto;
+            height: 90%;
+            width: 90%;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<h4>Ако улучиш логото на PaddyPower ще видиш каква ще е новата 2015-та година за теб!</h4>
+<h3 id="resultHolder"></h3>
+<div id="clickImageHolder">
+<img src="images/Paddy-Power.jpg" style="cursor: pointer;" id="clickImage"/>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script>
+    (function moveclickImage() {
+        var position = $("#clickImage").offset(); // position = { left: number, top: number }
+        oxPosition = position.left;
+        oyPosition = position.top;
+
+        var randomIntFromInterval = function (min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        }
+
+        var yPosition = randomIntFromInterval(0, ($("#clickImageHolder").innerHeight() - $("#clickImage").height()));
+        var xPosition = randomIntFromInterval(0, ($("#clickImageHolder").innerWidth() - $("#clickImage").width()));
+
+        var positionAndClassContent = [".prclickImage {",
+            "display: block;",
+            "animation: moveclickImage 1s;",
+            "-webkit-animation: moveclickImage 1s; }",
+            "@keyframes moveclickImage {",
+            "from {",
+            "top:" + oyPosition + "px;",
+            "left:" + oxPosition + "px;",
+            "}",
+            "to {",
+            "top:" + yPosition + "px;",
+            "left:" + xPosition + "px;",
+            "}",
+            "}",
+            "@-webkit-keyframes moveclickImage {",
+            "from {",
+            "top:" + oyPosition + "px;",
+            "left:" + oxPosition + "px;",
+            "}",
+            "to {",
+            "top:" + yPosition + "px;",
+            "left:" + xPosition + "px;",
+            "} }"
+        ].join("\n");
+
+        $("#clickImage").removeClass("prclickImage");
+
+        $("<style/>", {
+            type: "text/css",
+            id: "iposition",
+            html: positionAndClassContent
+        }).appendTo("body");
+
+        $("#clickImage").off("animationend webkitAnimationEnd oAnimationEnd");
+
+        $("#clickImage").on("animationend webkitAnimationEnd oAnimationEnd", function (event) {
+            $("#iposition").remove();
+            $("#clickImage").css({
+                position: "absolute",
+                left: xPosition + "px",
+                top: yPosition + "px"
+            });
+            setTimeout(moveclickImage.bind(this), 0);
+        });
+
+        $("#clickImage").addClass("prclickImage");
+    })();
+
+    $("#clickImage").click(function () {
+        $.get("./data/data.json", function (data) {
+            var getRandomInt = function (min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            var result = $.parseJSON(data);
+            var resultHolder = $("#resultHolder");
+            resultHolder.hide("slow", function() {
+                $(this).empty().text(result[getRandomInt(0, result.length)]).show("slow");
+            });
+        }, 'text');
+    });
+</script>
+</body>
+</html>
